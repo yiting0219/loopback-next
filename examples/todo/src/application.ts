@@ -9,6 +9,7 @@ import {RepositoryMixin} from '@loopback/repository';
 import {RestApplication} from '@loopback/rest';
 import {RestExplorerComponent} from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
+import morgan from 'morgan';
 import path from 'path';
 import {MySequence} from './sequence';
 
@@ -17,6 +18,18 @@ export class TodoListApplication extends BootMixin(
 ) {
   constructor(options: ApplicationConfig = {}) {
     super(options);
+
+    if (process.env.DEBUG) {
+      // Register `morgan` express middleware
+      // Create a middleware factory wrapper for `morgan(format, options)`
+      const morganFactory = (config?: morgan.Options) =>
+        morgan('combined', config);
+      this.expressMiddleware(
+        morganFactory,
+        {},
+        {injectConfiguration: false, key: 'middleware.morgan'},
+      );
+    }
 
     // Set up the custom sequence
     this.sequence(MySequence);
