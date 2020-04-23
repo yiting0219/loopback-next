@@ -40,11 +40,27 @@ Migration of the following component is out of scope of this spike:
 
 ## Techniques
 
+_This section provides a list of techniques compiled from existing LoopBack 3
+components. Please check
+[Overview of existing LB3 components](#overview-of-existing-lb3-components)
+below if you are interested in learning more about where the techniques are
+coming from._
+
 ### General
 
-1. How to structure the extension code to receive user-provided configuration &
-   target app instance. What are the instructions for adding a LB4 component to
-   a LB4 app.
+1. Expected component module layout and exports. How to structure the extension
+   code to receive user-provided configuration & target app instance. What are
+   the instructions for adding a LB4 component to a LB4 app.
+
+   TODOs for the migration guide based on @raymondfeng comments:
+
+   - Describe what a LB3 component can contribute to the application when it's
+     mounted.
+   - Maybe a diagram would help if it shows the handshake between an application
+     and a component as well as typical artifacts exported from a component.
+   - To some extent, a LB3 application asks its components to extend/patch the
+     app. In contrast, a LB4 application imports bindings (representing the
+     component's contribution to the app) from its components.
 
 2. A context shared by all parts of the application, allowing different layers
    to store and retrieve values like "the current user". In LB3, we have
@@ -127,10 +143,18 @@ Migration of the following component is out of scope of this spike:
       `@configure` specific to each service (see the logger extension for an
       example)._
 
-17. Inject models (entities & repositories) to the service. These models can be
-    provided either by the extension or by the target application. When using
-    models from the target application, the developer needs an option to specify
-    which models (entities) and associated repositories to use.
+17. Inject LB3 models (LB4 entities & repositories) to the service. These models
+    can be provided either by the extension or by the target application. When
+    using models from the target application, the developer needs an option to
+    specify which models (entities) and associated repositories to use.
+
+    _Note: In LB4, models/entities are not injectable now, we used them
+    primarily for the type information (to describe the shape of model data). As
+    part of the follow-up research, we will need to decide if it's enough to
+    inject LB4 Repository to a component or if we need to make model/entity
+    classes injectable too. Also note that `DefaultCrudReposiory` class provides
+    a public instance property `entityClass` referencing the model/entity it's
+    bound to._
 
 18. Provide a service factory to create services dynamically at runtime, e.g.
     named child loggers created via `app.log('name')` in LB3.
@@ -153,28 +177,28 @@ Migration of the following component is out of scope of this spike:
 
 ### Authentication & authorization
 
-21. Add a custom step to the default authentication/authorization sequence, so
-    that we can compute additional information about the current user (e.g.
+23. Add a custom step to the default LB3 authentication/authorization workflow,
+    so that we can compute additional information about the current user (e.g.
     groups the user belongs to).
 
     _Note: I think this step could be replaced by lazy initialization, where the
     current user groups are computed on the first access and cached for
     subsequent use._
 
-22. A new role resolver (e.g. using groups), the app developer needs a way how
+24. A new role resolver (e.g. using groups), the app developer needs a way how
     to configure which models/repositories to use for role resolution.
 
 ### Introspection
 
-9. Get a list of all models (entity classes) used by the application
+25. Get a list of all models (entity classes) used by the application
 
-10. Get definition of a given model (information about properties, relations,
+26. Get definition of a given model (information about properties, relations,
     mixins, etc.)
 
-11. Get a list of all remote methods (REST API endpoints) provided by a given
+27. Get a list of all remote methods (REST API endpoints) provided by a given
     model.
 
-12. Obtain a list of all REST endpoints provided by the application, including
+28. Obtain a list of all REST endpoints provided by the application, including
     metadata about request parameters & response schema, and any other
     information necessary to configure reverse-proxy routing rules (Kong, nginx,
     etc.).
