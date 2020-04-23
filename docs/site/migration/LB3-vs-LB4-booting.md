@@ -34,6 +34,21 @@ Models are determined from application options or model files,
 and they are attached to their respective datasources. They are then attached
 to the LoopBack Application object.
 
+In the first step, we define all models. In the second step, we attach the models to datasources and the application.
+
+The list of models defined may be longer than the list of models attached:
+
+loopback-boot looks at server/model-config to see which files should be added to the app.
+Then it examines inheritance and mixin configurations, to determine dependencies (which models to add to the list)
+Models are sorted topologically based on inheritance, so that we define parent models before children.
+All models from the list above are defined via model registry.
+Only models specified in server/model-config are added to the app and attached to a datasource (unless dataSource flag is set to null).
+
+loopback-boot also supports universal mode, where the entire loopback application is bundled for browser. In that case, the boot process is split in two parts:
+
+The first step finds out which models (and their parents, etc.) are needed by the app. It creates "instructions" for booting an app, these instructions are compiled into the browser bundle together with model source files (common/models/{model-name}.json).
+The second step is performed in the browser, it processes the instructions from the first step.
+
 #### 4. Setting up middleware
 
 Middleware from the middleware configuration file are resolved and added to the
@@ -50,22 +65,26 @@ Boot scripts are resolved from the `server/boot` directory and run.
 
 ### In LoopBack 4
 
-In LoopBack 4, the booting tasks are shared between the
-[RestApplication](./apidocs/apidocs.rest.restapplication.html) class
+In LoopBack 4, the booting tasks are shared between the `@loopback/core`'s
+[Application](./apidocs/apidocs.core.application.md) class
 and the
-[@loppback/boot](./apidocs/apidocs.boot.html) package. Since your application
-will extend `BootMixin` and `RestApplication`, their separation will not be
+[@loopback/boot](./apidocs/apidocs.boot.html) package. Since your application
+will extend `BootMixin` and `Application`, their separation will not be
 apparent to you, and understanding of how they work together as one as not
 mandatory for developing LoopBack 4 projects.
 
 The following are the list of tasks that are performed in the LoopBack 3
 booting process, and their equivalent in LoopBack 4.
 
+{% include tip.html content="For all the details about booting in LoopBack 4,
+refer to the
+[booting documentation](./Booting-an-Application.md)." %}
+
 ### 1. Configuration of application settings
 
 There is no `config.json` in LoopBack 4. The application options are passed in
 the constructor of the
-[RestApplication](./apidocs/apidocs.rest.restapplication.html) class.
+[Application](./apidocs/apidocs.core.application.md) class.
 
 ### 2. Configuration of datasources
 
@@ -75,15 +94,23 @@ associated JSON configuration file. They all reside in the `src/datasources`
 directory.
 
 `BootMixin` resolves the datasources, and attaches them to the application.
+Read more about datasource booter
+[here](./Booting-an-Application.md#controller-booter).
 
 Read more about LoopBack 4 datasource [here](./DataSources.md).
+
+{% include note.html content="We are moving away from JSON files for datasource
+configuration. Refer to
+[loopback-next#5000](https://github.com/strongloop/loopback-next/pull/5000)
+for the progress." %}
 
 ### 3. Definition of models
 
 Although REST APIs are built around Models, they are not a part of the booting
 process in LoopBack 4; Controllers and Repositories are.
 
-Controllers and Repositories import models as regular TypeScript classes.
+Controllers and Repositories import models as regular TypeScript classes since
+they are required at compile time.
 
 #### 4. Setting up middleware
 
@@ -126,3 +153,6 @@ using `app.mountExpressRouter()`.
 The functionality of non-routing boot scripts can be implemented as life cycle
 observers. Read more about life cycle events and observers
 [here](./Life-cycle.md).
+
+For more information about migrating boot scripts in LoopBack 4, refer to
+the [boot scripts migration guide](./migration-boot-scripts.md).
