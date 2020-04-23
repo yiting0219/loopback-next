@@ -191,6 +191,8 @@ export class Error {
   @property({required: true, jsonSchema: {
   type: 'integer',
   format: 'int32',
+  minimum: -2147483648,
+  maximum: 2147483647,
 }})
   code: number;
 
@@ -399,6 +401,8 @@ export class Error {
   @property({required: true, jsonSchema: {
   type: 'integer',
   format: 'int32',
+  minimum: -2147483648,
+  maximum: 2147483647,
 }})
   code: number;
 
@@ -893,6 +897,8 @@ export class Error {
   @property({required: true, jsonSchema: {
   type: 'integer',
   format: 'int32',
+  minimum: -2147483648,
+  maximum: 2147483647,
 }})
   code: number;
 
@@ -1149,6 +1155,8 @@ export class Error {
   @property({required: true, jsonSchema: {
   type: 'integer',
   format: 'int32',
+  minimum: -2147483648,
+  maximum: 2147483647,
 }})
   code: number;
 
@@ -1785,6 +1793,8 @@ export class Error {
   @property({required: true, jsonSchema: {
   type: 'integer',
   format: 'int32',
+  minimum: -2147483648,
+  maximum: 2147483647,
 }})
   code: number;
 
